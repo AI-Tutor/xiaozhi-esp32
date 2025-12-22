@@ -1,0 +1,71 @@
+name: Build (Tag)
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build firmware
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Prepare cache dirs
+        shell: bash
+        run: |
+          mkdir -p .cache/espressif .cache/ccache managed_components
+
+      - name: Cache ESP-IDF downloads and ccache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/espressif
+            .cache/ccache
+            managed_components
+          key: ${{ runner.os }}-idf-v5.5.1-${{ hashFiles('dependencies.lock', 'sdkconfig.ci', 'sdkconfig.citest', 'CMakeLists.txt', 'main/**/CMakeLists.txt', 'main/**/idf_component.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-idf-v5.5.1-
+
+      - name: Build with ESP-IDF v5.5.1
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.1
+          target: esp32s3
+          extra_docker_args: |
+            -v ${{ github.workspace }}/.cache/espressif:/root/.espressif
+            -v ${{ github.workspace }}/.cache/ccache:/root/.cache/ccache
+            -e IDF_CCACHE_ENABLE=1
+            -e CCACHE_DIR=/root/.cache/ccache
+          command: |
+            set -euo pipefail
+            mkdir -p artifacts
+
+            cp sdkconfig.ci sdkconfig
+            idf.py -B build-ci -DPROJECT_VER=${{ github.ref_name }} build
+            cp build-ci/xiaozhi.bin artifacts/xiaozhi.bin
+
+            cp sdkconfig.citest sdkconfig
+            idf.py -B build-test -DPROJECT_VER=${{ github.ref_name }} build
+            cp build-test/xiaozhi.bin artifacts/xiaozhi-test.bin
+
+      - name: Upload xiaozhi.bin
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiaozhi_${{ github.ref_name }}.bin
+          path: artifacts/xiaozhi.bin
+          if-no-files-found: error
+
+      - name: Upload xiaozhi-test.bin
+        uses: actions/upload-artifact@v4
+        with:
+          name: xiaozhi-test_${{ github.ref_name }}.bin
+          path: artifacts/xiaozhi-test.bin
+          if-no-files-found: error
