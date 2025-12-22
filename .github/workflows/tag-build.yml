@@ -39,7 +39,8 @@ jobs:
         with:
           esp_idf_version: v5.5.1
           target: esp32s3
-          extra_docker_args: |
+          # Must be a single line when injected into `docker run ...` (newlines would break the command)
+          extra_docker_args: >-
             -v ${{ github.workspace }}/.cache/espressif:/root/.espressif
             -v ${{ github.workspace }}/.cache/ccache:/root/.cache/ccache
             -e IDF_CCACHE_ENABLE=1
