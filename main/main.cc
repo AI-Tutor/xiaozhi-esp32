@@ -24,6 +24,8 @@ extern "C" void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
+    SystemInfo::InitializeUdid();
+
     // Launch the application
     auto& app = Application::GetInstance();
     app.Start();

@@ -11,6 +11,7 @@ public:
     static size_t GetFlashSize();
     static size_t GetMinimumFreeHeapSize();
     static size_t GetFreeHeapSize();
+    static void InitializeUdid();
     static std::string GetMacAddress();
     static std::string GetChipModelName();
     static esp_err_t PrintTaskCpuUsage(TickType_t xTicksToWait);
