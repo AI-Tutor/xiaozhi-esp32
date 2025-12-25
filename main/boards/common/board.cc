@@ -18,22 +18,6 @@ Board::Board() {
         uuid_ = GenerateUuid();
         settings.SetString("uuid", uuid_);
     }
-
-    Settings websocket_settings("websocket", false);
-    std::string token = websocket_settings.GetString("token");
-    std::string udid_value = settings.GetString("udid", "__missing__");
-    bool has_udid_key = udid_value != "__missing__";
-    udid_ = has_udid_key ? udid_value : "";
-    if (!token.empty()) {
-        if (!has_udid_key || !udid_.empty()) {
-            udid_.clear();
-            settings.SetString("udid", "");
-        }
-    } else if (udid_.empty()) {
-        udid_ = GenerateUdid();
-        settings.SetString("udid", udid_);
-    }
-
     ESP_LOGI(TAG, "UUID=%s SKU=%s", uuid_.c_str(), BOARD_NAME);
 }
 
@@ -58,19 +42,6 @@ std::string Board::GenerateUuid() {
         uuid[12], uuid[13], uuid[14], uuid[15]);
     
     return std::string(uuid_str);
-}
-
-std::string Board::GenerateUdid() {
-    uint8_t random_bytes[2];
-    esp_fill_random(random_bytes, sizeof(random_bytes));
-
-    char udid_str[5];
-    snprintf(udid_str, sizeof(udid_str), "%02x%02x", random_bytes[0], random_bytes[1]);
-    return std::string(udid_str);
-}
-
-std::string Board::GetDeviceId() {
-    return SystemInfo::GetMacAddress() + udid_;
 }
 
 bool Board::GetBatteryLevel(int &level, bool& charging, bool& discharging) {

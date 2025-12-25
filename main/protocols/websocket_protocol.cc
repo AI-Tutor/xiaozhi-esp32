@@ -1,5 +1,6 @@
 #include "websocket_protocol.h"
 #include "board.h"
+#include "system_info.h"
 #include "application.h"
 #include "settings.h"
 
@@ -104,8 +105,7 @@ bool WebsocketProtocol::OpenAudioChannel() {
         websocket_->SetHeader("Authorization", token.c_str());
     }
     websocket_->SetHeader("Protocol-Version", std::to_string(version_).c_str());
-    auto device_id = Board::GetInstance().GetDeviceId();
-    websocket_->SetHeader("Device-Id", device_id.c_str());
+    websocket_->SetHeader("Device-Id", SystemInfo::GetMacAddress().c_str());
     websocket_->SetHeader("Client-Id", Board::GetInstance().GetUuid().c_str());
 
     websocket_->OnData([this](const char* data, size_t len, bool binary) {
