@@ -2,7 +2,6 @@
 #include "mcp_server.h"
 #include "display.h"
 #include "board.h"
-#include "system_info.h"
 #include "config.h"
 
 #include <esp_log.h>
@@ -303,7 +302,8 @@ std::string SscmaCamera::Explain(const std::string& question) {
     multipart_footer += "\r\n--" + boundary + "--\r\n";
 
     // 配置HTTP客户端，使用分块传输编码
-    http->SetHeader("Device-Id", SystemInfo::GetMacAddress().c_str());
+    auto device_id = Board::GetInstance().GetDeviceId();
+    http->SetHeader("Device-Id", device_id.c_str());
     http->SetHeader("Client-Id", Board::GetInstance().GetUuid().c_str());
     if (!explain_token_.empty()) {
         http->SetHeader("Authorization", "Bearer " + explain_token_);

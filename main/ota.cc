@@ -1,5 +1,4 @@
 #include "ota.h"
-#include "system_info.h"
 #include "settings.h"
 #include "assets/lang_config.h"
 
@@ -85,7 +84,8 @@ std::unique_ptr<Http> Ota::SetupHttp() {
     auto network = board.GetNetwork();
     auto http = network->CreateHttp(0);
     http->SetHeader("Activation-Version", has_serial_number_ ? "2" : "1");
-    http->SetHeader("Device-Id", SystemInfo::GetMacAddress().c_str());
+    auto device_id = board.GetDeviceId();
+    http->SetHeader("Device-Id", device_id);
     http->SetHeader("Client-Id", board.GetUuid());
     if (has_serial_number_) {
         http->SetHeader("Serial-Number", serial_number_.c_str());

@@ -5,7 +5,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 if(NOT DEFINED PROJECT_VER)
-  set(PROJECT_VER "1.8.15")
+  set(PROJECT_VER "1.8.16")
 endif()
 
 # Add this line to disable the specific warning
