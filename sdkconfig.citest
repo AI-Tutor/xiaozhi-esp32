@@ -606,7 +606,7 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 # Xiaozhi Assistant
 #
-CONFIG_OTA_URL="https://aitoys.utilapi.bid/xiaozhi/ota/"
+CONFIG_OTA_URL="https://test.dajifuture.com/xiaozhi/ota/"
 # CONFIG_LANGUAGE_ZH_CN is not set
 # CONFIG_LANGUAGE_ZH_TW is not set
 CONFIG_LANGUAGE_EN_US=y
